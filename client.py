@@ -5,112 +5,109 @@ Created on Thu Jul 13 15:22:47 2023
 @author: rnjsd
 """
 import python_module as pm
-import sys
-import collections
-import hashlib # 암호화, 단방향
-import os
-#%% 230718
+import mymath
+#from mymath import area, mypi
+#from mymath import *
+from string import punctuation as punc
 
-#%%
-pm.moves(2, True)
-pm.prime(17)
-print(pm.prime_number(15))
-print(pm.find_primes(20))
-name = ["토미", "지미", "낸시", "불독"]
-fes = ["OT", "CONCERT", "MT", "PLAY"]
-print(pm.nameFes(name, fes))
-print(pm.random_fes(name, fes))
-print(pm.random_fes2(name, fes))
-'''
-for i in range(10):
-    print(random.randint(1, 6))  #randint(i, j) -> j부분이 n-1이 아님 n임
-'''
-numb = [11, 15, 2, 7]
-target = 9
-print(pm.sums(numb, target))
-print(pm.targetIndex(numb, target))
-print(pm.find_indexes(numb, target))
-print(pm.mysums(1,2,3,4))
-print(pm.gamble(10, 100, 1))
-#%%
-sentence = '''God, give me grace to accept with serenity
-the things that cannot be changed,
-Courage to change the things
-which should be changed,
-and the Wisdom to distinguish
-the one from the other.'''
-#%%
-#print(sentence)
-text_path = 'test_sentence.txt'
+#%%230726
+f = lambda x, y : x+y
+print(f(1, 2))
+print(f('test', 'python'))
+print(f([1,2], [3,4]))
+vargs = lambda x, *args : args
+print(vargs(2,3,4,5,6,7))
+print(pm.g(pm.f1))
+print(pm.g(pm.f2))
+print(pm.g(lambda x : x*x + 3*x - 10))
+func_list = [
+    lambda x, y : x + y,
+    lambda x, y : x - y,
+    lambda x, y : x * y,
+    lambda x, y : x / y
+]
+for i in func_list:
+    print(i(2,1))
+    
+plus = lambda x, y : x + y
+minus = lambda x, y : x - y
+multiply = lambda x, y : x * y
+divide = lambda x, y : x / y
 
-f = open(text_path, 'w')
-f.write(sentence)
-f.close()
-with open(text_path, 'r') as f:
-    test_string = f.read()
-    print(test_string)
-#%%
-with open(text_path, 'w') as f:
-    f.write(sentence)
-#%% 230719
-with open('s.txt', 'r') as s:
-    s_text =[line for line in s]
-s_text.sort()
-print(''.join(s_text))
+list_operation = [plus, minus, multiply, divide]
+for i in list_operation:
+    print(i(6, 3))    
 
-sample_list = ['good', 'very good!', 'excellent', 'nice!']
-print(sorted(sample_list)) # sorted는 sample_list에 저장하지않음
-print(sorted(sample_list, key = lambda x: x[1]))   # sorted 함수에 있는 key라는 설정값울 사용해서 lambda x에 x[1]에 해당하는 값을 기준으로 sort
-print(sorted(sample_list, key = len))  # 길이를 기준으로 정렬
-sample_list.sort(key = lambda x: x.split()[0]) # sort는 sample_list에 저장함
-print(sample_list)
+for data, action in [(2, pm.increment), (4, pm.square)]:
+    print(action(data))
 
-with open('s.txt') as f:
-    lines = f.readlines()
-lines.sort(key = lambda x: x.split()[1])
-print(''.join(lines))
-with open('s.txt') as f:
-    lines = f.read()
+data = [1, 2, 3, 4]
+print([pm.f(i) for i in data])
 
-print(lines.splitlines()) # 줄마다 구분. 즉, \n으로 구분
+list_result = []
+for i in data:
+    list_result.append(pm.f(i))
+print(list_result)
 
-with open('s.txt') as f:
-    lines = f.readlines()
-t_lines = []
-for i in range(0, len(t_lines), 3):
-    print(' '.join(t_lines[i:i+3]))
+result_map = map(pm.f, data)
+type(result_map)
+print(result_map)
+print(list(result_map))
+print(list(map(pm.f, data)))
+print(list(map(lambda x : x*x, data)))
+print(list(map(lambda x : x*x + 3*x +5, range(10))))
 
-with open('s.txt') as f:
-    lines = f.read().split()
-for i in range(0, len(lines), 3):
-    print(' '.join(lines[i:i+3]))
+data_list = ['hello', 'python', 'programming']
+print(list(map(lambda x : len(x),data_list)))
 
-ip_group = {}
-with open('log_webserver.txt') as f:
-    for line in f:
-        ip, url, times = line.split(':')
-        if ip not in ip_group:
-            ip_group[ip] = []
-        ip_group[ip].append(url)
-for i in ip_group:
-    print(i)
-    k = collections.Counter(ip_group[i])
-    for url, count in k.items():
-        print(url, '사이트에 접속한 횟수는', count, '회 입니다')
-    print('=' *50)
+xx = list(range(1, 6))
+yy = list(range(6,11))
+z = list(map(lambda x, y : x+y, xx, yy))
+z_map = map(lambda x, y : x+y, xx, yy)
+print(z)
+print(next(z_map))
+print(next(z_map))
+print(next(z_map))
+print(next(z_map))
+print(next(z_map))
 
+print(list(filter(lambda x : x>3, [2,3,4,5,6])))
+print(type(filter(lambda x : x>3, [2,3,4,5,6])))
 
-password = 'password_my_2'
-encrypted1 = hashlib.sha1(password.encode()).hexdigest()
-print(encrypted1)
+list_3 = []
+for i in [2,3,4,5,6]:
+    if i>3:
+        list_3.append(i)
+print(list_3)
 
-pm.savePasswd('권용현','abcdef')
-pm.savePasswd('guest','12345')
-print(pm.checkIfUservalid('guest', '12345'))
-os.remove('access.text')
-print(__import__('pandas'))
-file_path = 'D:\\anaconda\\lib\\site-packages\\pandas\\'
+print(list(filter(lambda x : x%2==0, range(1,11))))
+print(list(filter(lambda x : x%2!=0, range(1,11))))
 
+list(filter(lambda x : x%2-1, range(1,11)))
 
+list_ = ['high', 'level', '', None, 'builtint', 'func']
+print(list(filter(None, list_)))       # None = 아무런 조건식이 없어, 입력값 자체를 진릿값으로 사용한다는 의미로 해석)
 
-#%%
+fnames = ['a_thumb.jpg', 'b01_thumb.jpg', 's100_thumb.jpg', 's100.jpg', 'b01.jpg']
+print(list(filter(lambda x : 'thumb' in x, fnames)))
+print(list(filter(lambda x : 'thumb' not in x, fnames)))
+
+L = [3, 2, [3, [[3], 4]]]
+print(pm.change_values(L, 3, 5))
+print(pm.change_values2(L, 3, 5))
+print(pm.change_values3(L, 3, 5))
+L = [3, 2, [3, [[3], 4]]]
+print(pm.frange(4))
+print(pm.frange(2, 7))
+print(pm.frange(1, 3, 0.2))
+print(pm.frange(3, 1, -0.2))
+print(pm.frange2(4))
+print(pm.frange2(2, 7))
+print(pm.frange2(1, 3, 0.2))
+print(pm.frange2(3, 1, -0.2))
+print(pm.frange3(4))
+print(pm.frange3(2, 7))
+print(pm.frange3(1, 3, 0.2))
+print(pm.frange3(3, 1, -0.2))
+print(punc)
+print(pm.str_test())

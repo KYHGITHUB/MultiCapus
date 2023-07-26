@@ -16,12 +16,11 @@ def dna_dvi(dna):
     return dna_list
 
 def dna_disc(dna):
-    print(dna_dvi(dna))
+    #print(dna_dvi(dna))
     result = False
     if len(dna) % 3 == 0:
         if dna.startswith('ATG'):
             if dna.endswith('TAA') or dna.endswith('TGA') or dna.endswith('TAG'):
                 if dna_dvi(dna).count('TAA') == 0 and  dna_dvi(dna).count('TGA') == 0 and dna_dvi(dna).count('TAG') == 0:
-                    result = True
-                    return result                  
+                    result = True                 
     return result
