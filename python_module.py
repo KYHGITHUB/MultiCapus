@@ -4,109 +4,76 @@ Created on Thu Jul 13 15:24:17 2023
 
 @author: rnjsd
 """
-import copy
-from decimal import Decimal
+import folium
 
+#%%230727
+def change_list(filename):
+    lines_list = []
+    result_list = []
+    with open(filename) as f:
+        lines = f.readlines()
+    for line in lines:
+        lines_list.append(list(map(int, line.strip().split())))
+    for i in range(len(lines_list[0])):
+        save_list = []
+        for j in lines_list:
+            save_list.append(j[i])
+        result_list.append(save_list)
+    return result_list
 
-
-
-#%%230726
-def f1(x):
-    return x*x + 3*x - 10
-def f2(x):
-    return x*x*x
-def g(func):
-    return [func(x) for x in range(-2, 3)]
-def increment(n):
-    return n+1
-def square(n):
-    return n**2
-def f(x):
-    return x*x
-def change_values(ch_list, before, after):
-    copy_ch_list = copy.deepcopy(ch_list)
-    for i in range(len(copy_ch_list)):
-        if type(copy_ch_list[i]) != list:
-            if copy_ch_list[i] == before:
-                copy_ch_list[i] = after
-        else:
-            copy_ch_list[i] = change_values(copy_ch_list[i], before, after)
-            #change_values(copy_ch_list[i], before, after)
-    return copy_ch_list
-def change_values2(L, from_s, to_s):            #작동 제대로 안함
-    for k, ele in enumerate(L):
-        if ele == from_s:
-            L[k] = to_s
-        elif type(ele) == list:
-            change_values2(ele, from_s, to_s)
-    return L
-def change_values3(ch_list, before, after):         #작동 제대로 안함
-    for i in range(len(ch_list)):
-        if type(ch_list[i]) != list:
-            if ch_list[i] == before:
-                ch_list[i] = after
-        else:
-            change_values3(ch_list[i], before, after)
-    return ch_list
-
-def frange(start, stop=0, step=1.0):
-    frange_list = []
-    if stop == 0:          
-        stop = start     # frange(9) -> frange(9, 0) -> frange(9, 9) -> frange(0, 9)
-        start = 0.0
-    val = float(start)
-    if start < stop:
-        while val < stop:
-            frange_list.append(val)
-            val += step
-    elif start > stop:
-        while val > stop:
-            frange_list.append(val)
-            val += step
-    return frange_list
-
-def frange2(start, *args):
-    if len(args) == 0:
-        stop = start
-        start = Decimal('0.0')
-        step = Decimal('1.0')
-    elif len(args) == 1:
-        stop = Decimal(str(args[0]))
-        step = Decimal('1.0')
-    elif len(args) == 2:
-        stop = Decimal(str(args[0]))
-        step = Decimal(str(args[1]))
-
-    frange_list = []
-    if start > stop:
-        while start > stop:
-            frange_list.append(float(start))
-            start += step
-    elif start < stop:
-        while start < stop:
-            frange_list.append(float(start))
-            start += step
-    return frange_list
-
-def frange3(arg1, *args):
-    if len(args) == 0:
-        start, stop, step = 0.0, float(arg1), 1.0
-    if len(args) == 1:
-        start, stop, step = arg1, float(args[0]), 1.0
-    if len(args) == 2:
-        start, stop, step = arg1, float(args[0]), float(args[1])
+def trans_matrix(file_path):
+    with open(file_path, 'r') as f:
+        matrix = [list(map(int, line.strip().split())) for line in f]
+        return [list(row) for row in zip(*matrix)]
     
-    frange_list = []
-    if start > stop:
-        while start > stop:
-            frange_list.append(start)
-            start += step
-    if start < stop:
-        while start < stop:
-            frange_list.append(start)
-            start += step
-    return frange_list
+def change2_list(filename):
+    with open(filename) as f:
+        lines_list = [list(map(int, line.strip().split())) for line in f.readlines()]
+    result_list = [[j[i] for j in lines_list] for i in range(len(lines_list[0]))]
+    return result_list
+def price_profit(listname):
+    if not listname or len(listname) < 2:
+        return 0
+    min_price = listname[0]
+    max_profit = 0 
+    for price in listname:
+        min_price = min(min_price, price)
+        max_profit = max(max_profit, price - min_price)
+    max_price = min_price + max_profit
+    return min_price, max_price
+def MarkerMap(data_dict):   #pip install folium 프롬프트로 설치
+    maps = folium.Map(location=[37.5602, 126.982], zoom_start=7, tiles='cartodbpositron')
+    for i in data_dict:
+        name = i
+        lat_ = data_dict[i][0]
+        long_ = data_dict[i][1]
+        folium.CircleMarker([lat_, long_], radius = 4, popup = name, color = 'red', fill_color = 'red').add_to(maps)
+    return maps
+#%% 계산기
+result = 0
 
-def str_test():
-    import string
-    print(string.punctuation)
+def add(num):
+    global result
+    result += num
+    return result
+
+#%% class를 이용한 계산기
+class Calculator:
+    def __init__(self):     # 생성자,   메서드
+        self.result = 0
+    def add(self, num):     # 메서드
+        self.result += num
+        return self.result
+#%%
+def find_data(dataset):
+    key = ['rank', 'movieNm', 'openDt', 'salesAmt']
+    result_data = {}
+    for i, j in dataset.items():
+        if i in key:
+            result_data[i] = j
+    return result_data
+
+def index_data(data):
+    for i in data['boxOfficeResult']['dailyBoxOfficeList']:
+        result_data_dict = find_data(i)
+        print(result_data_dict)
