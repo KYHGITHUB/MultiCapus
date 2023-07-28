@@ -5,76 +5,74 @@ Created on Thu Jul 13 15:22:47 2023
 @author: rnjsd
 """
 import python_module as pm
-import matplotlib.pyplot as plt
-import requests # 웹서버 가지고 오는 라이브러리
-import sys_path_add
-from module_test import module_test as mt
 
 
-#%%230727
-prices = [7, 1, 5, 3, 6, 4]
-plt.plot(prices)        #conda install matplotlib 프롬프트로 설치
-plt.show()
+a = pm.MyClass()
+a + 3
 
-with open('data.txt', 'w') as f:
-    f.write('1 2 3\n4 5 6\n7 8 9')
+mc1 = pm.MyClass2('권용현', 32)
+print(mc1.name)
+print(mc1.age)
 
-print(pm.change_list('data.txt'))
-print(pm.change2_list('data.txt'))
-print(pm.trans_matrix('data.txt'))
-#%%
-prices = [7, 1, 5, 3, 6, 4]
-print(pm.price_profit(prices))
+mc2 = pm.MyClass3()
+print(mc2.age)
+print(mc2.name)
 
-data = {
-'Eoleumgol' : [35.570678, 128.986135],
-'Bangujeong' : [37.867614, 126.752505], 'Abgujeong':[37.531713, 127.029154],
-'Guemgangsonamusup': [36.985459, 129.205468],
-'Heonanseolheonmyo': [37.425569, 127.296012],
-'Baegdamsa': [38.164890, 128.374023],
-'Moagsan mileugbul' : [35.723051, 127.053816],
-'Hailli' : [37.680120, 126.398192],
-'Ieodo': [32.116883, 125.166683],
-'Bughansan' : [37.659318, 126.9775415],
-'Ondalsanseong' : [37.057707, 128.484972],
-'Cheonglyeongpo' : [37.176118, 128.445583],
-'Hansanseom' : [34.816761, 128.423040],
-'Haeinsa' : [35.801479, 128.098052],
-'Sancheonjae' : [35.275175, 127.849891],
-'Seomjingang' : [34.963452, 127.760620],
-'Baegheungam' : [35.994240, 128.778653],
-'Guksaseonangdang': [37.696354, 128.753741],
-'Mudeungsan' : [35.134134, 126.988756],
-'Busanseong' : [36.268112, 126.914802],
-'Cheolsanri' : [37.808038, 126.450912], 'Odusan' : [37.773131, 126.677203]
-}
+mc3 = pm.MyClass4()
+print(mc3.age)
+mc4 = pm.MyClass4(192,'김창창')
+print(mc4.name)
+print(mc4.age)
 
-pm.MarkerMap(data).save('data.html')
+mc5 = pm.MyClass5('010900')
+print(mc5.phone)
+print(mc5.age)
+print(mc5.print_attr(1292))
 
-my_dict = {'Home':[36.11823463264378,128.3507192744579],
-           'visitPlace':[36.108057626856926, 128.41995192033562 ],
-           'favoritePlace':[35.15845558589585, 129.15990774436943 ]}
+b = pm.B()
+print(pm.B.__bases__)
+b.f()
+print(dir(pm.B))
+print(dir(b))
 
-pm.MarkerMap(my_dict).save('myplace.html')
+mc6 = pm.MyClass6()
+mc6.set(100)
+mc6.tem()
+pm.MyClass6.set(mc6, 200)
+print(pm.MyClass6.get(mc6))
 
-print(pm.add(5))
-print(pm.add(3))
-print(pm.add(8))
-print(pm.add(10))
-cal1 = pm.Calculator()
-print(cal1.add(5))
-print(cal1.add(7))
-print(cal1.add(108))
+life_io = pm.Life()
+del(life_io) 
 
-url = 'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=c3a0fa760324363ef7cde2afa0d73297&targetDt=20230726'
-resp = requests.get(url)
-print(resp)
-data = resp.json()
-print(data)
-print(data.keys())
-print(data['boxOfficeResult'])
-print(type(data['boxOfficeResult']))
-print(data['boxOfficeResult'].keys())
-print(data['boxOfficeResult']['dailyBoxOfficeList'])
-pm.index_data(data)
-mt.index_data(data)
+v1 = pm.Var()
+v2 = pm.Var()
+print(v1.c_mem, v2.c_mem)
+v1.c_mem = 50
+print(v1.c_mem, v2.c_mem)
+
+fc1 = pm.FourCal(10, 100)
+print(fc1.add(), fc1.mul(), fc1.sub(), fc1.div())
+
+fc2 = pm.safeFourCal(100, 0)
+print(fc2.div())
+fc3 = pm.safeFourCal(100, 10)
+print(fc3.div())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

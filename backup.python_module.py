@@ -11,6 +11,7 @@ import random
 import hashlib
 import os
 from decimal import Decimal
+import folium
 #%% 230713
 print('out layer')
 def test():
@@ -704,3 +705,124 @@ def frange3(arg1, *args):
 def str_test():
     import string
     print(string.punctuation)
+#%%230727
+def change_list(filename):
+    lines_list = []
+    result_list = []
+    with open(filename) as f:
+        lines = f.readlines()
+    for line in lines:
+        lines_list.append(list(map(int, line.strip().split())))
+    for i in range(len(lines_list[0])):
+        save_list = []
+        for j in lines_list:
+            save_list.append(j[i])
+        result_list.append(save_list)
+    return result_list
+
+def trans_matrix(file_path):
+    with open(file_path, 'r') as f:
+        matrix = [list(map(int, line.strip().split())) for line in f]
+        return [list(row) for row in zip(*matrix)]
+    
+def change2_list(filename):
+    with open(filename) as f:
+        lines_list = [list(map(int, line.strip().split())) for line in f.readlines()]
+    result_list = [[j[i] for j in lines_list] for i in range(len(lines_list[0]))]
+    return result_list
+def price_profit(listname):
+    if not listname or len(listname) < 2:
+        return 0
+    min_price = listname[0]
+    max_profit = 0 
+    for price in listname:
+        min_price = min(min_price, price)
+        max_profit = max(max_profit, price - min_price)
+    max_price = min_price + max_profit
+    return min_price, max_price
+def MarkerMap(data_dict):   #pip install folium 프롬프트로 설치
+    maps = folium.Map(location=[37.5602, 126.982], zoom_start=7, tiles='cartodbpositron')
+    for i in data_dict:
+        name = i
+        lat_ = data_dict[i][0]
+        long_ = data_dict[i][1]
+        folium.CircleMarker([lat_, long_], radius = 4, popup = name, color = 'red', fill_color = 'red').add_to(maps)
+    return maps
+#%% 계산기
+result = 0
+
+def add(num):
+    global result
+    result += num
+    return result
+
+#%% class를 이용한 계산기
+class Calculator:
+    def __init__(self):     # 생성자,   메서드
+        self.result = 0
+    def add(self, num):     # 메서드
+        self.result += num
+        return self.result
+#%%
+def find_data(dataset):
+    key = ['rank', 'movieNm', 'openDt', 'salesAmt']
+    result_data = {}
+    for i, j in dataset.items():
+        if i in key:
+            result_data[i] = j
+    return result_data
+
+def index_data(data):
+    for i in data['boxOfficeResult']['dailyBoxOfficeList']:
+        result_data_dict = find_data(i)
+        print(result_data_dict)
+#%%230728
+import folium
+import json
+
+search = ['REFINE_LOTNO_ADDR', 'REFINE_WGS84_LAT', 'REFINE_WGS84_LOGT', 'OPEN_TM_INFO']     # 위도, 경도, 주소, 오픈시간
+
+def find_data(data_dict):
+    result_data_dict = {}
+    for i, j in data_dict.items():
+        if i in search:
+            result_data_dict[i] = j
+    return result_data_dict
+
+def MarkerMap(file_name):
+    with open(file_name, encoding = 'utf-8') as f:
+        datas = json.load(f)
+    maps = folium.Map(location=[37.5602, 126.982], zoom_start=7, tiles='cartodbpositron')
+    for i in range(len(datas)):
+        datas_dict = find_data(datas[i])
+        name = datas_dict[search[0]]
+        lat_ = float(datas_dict[search[1]]) if datas_dict[search[1]] else None
+        long_ = float(datas_dict[search[2]]) if datas_dict[search[2]] else None
+        time = datas_dict[search[3]]
+        if lat_ is not None and long_ is not None:
+            folium.CircleMarker([lat_, long_], radius = 4, popup = (name, time), color = 'red', fill_color = 'red').add_to(maps)
+    return maps
+
+search2 = ['RESTRT_NM', 'TASTFDPLC_TELNO', 'REFINE_LOTNO_ADDR', 'REFINE_WGS84_LAT', 'REFINE_WGS84_LOGT']     # 가게 이름, 전화 번호, 주소, 위도, 경도
+
+def find_data2(data_dict):
+    result_data_dict = {}
+    for i, j in data_dict.items():
+        if i in search2:
+            result_data_dict[i] = j
+    return result_data_dict
+
+def MarkerMap2(file_name):
+    with open(file_name, encoding = 'utf-8') as f:
+        datas = json.load(f)
+    maps = folium.Map(location=[37.5602, 126.982], zoom_start=7, tiles='cartodbpositron')
+    for i in range(len(datas)):
+        datas_dict = find_data2(datas[i])
+        name = datas_dict[search2[0]]
+        tel = datas_dict[search2[1]]
+        add = datas_dict[search2[2]]
+        lat_ = float(datas_dict[search2[3]]) if datas_dict[search2[3]] else None
+        long_ = float(datas_dict[search2[4]]) if datas_dict[search2[4]] else None
+        if lat_ is not None and long_ is not None:
+            folium.CircleMarker([lat_, long_], radius = 4, popup = folium.Popup(f'이름 :{name}, 번호: {tel}, 주소 : {add}', max_width = 300), color = 'red', fill_color = 'red').add_to(maps)
+    return maps
