@@ -11,7 +11,7 @@ item_labels = {'item0':'소개', 'item1':'세미 프로젝트', 'item2':'주간 
 
 FIL = lambda x : item_labels[x]
 item = st.sidebar.selectbox('항목을 골라요.',  item_list, format_func = FIL )
-
+#item = st.sidbar.selectbox('항목을 골라요.', item_list)
 if item == 'item1':
 	p1.app()
 elif item == 'item2':
