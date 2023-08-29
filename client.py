@@ -1,16 +1,35 @@
 import python_module as pm
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
-
-
+pwd
 file_path = 'D:\\.spyder-py3\\class file'
-df_cctv = pd.read_csv(file_path + '\\서울시 자치구'
-                      ' 년도별 CCTV 설치 현황_230630기준.csv', encoding='euc-kr') 
+tips = pd.read_csv(file_path + '\\tips.csv', sep=',')
+gpd = tips.groupby(['day', 'smoker'])
+for i, group in gpd:
+    print(i)
+group
 
-df_pop = pd.read_csv(file_path + '\\주민등록인구_20230828092210.csv')
-new_df = pm.dfMerge(df_pop, df_cctv)
-print(new_df)
-new_df.info()
-font_path = 'D:\\.spyder-py3\\class file\\NanumGothic.ttf'
-pm.dfPlotScatt(new_df, font_path)
+
+
+df_cctv = pd.read_excel(file_path+'\\12_04_08_E_CCTV.xlsx')
+df_pop = pd.read_csv(file_path+'\\주민등록인구_20230828092210.csv')
+
+
+
+pm.PredictModelPlot(df_cctv, df_pop)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
