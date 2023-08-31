@@ -5,68 +5,75 @@ Created on Thu Jul 13 15:24:17 2023
 @author: rnjsd
 """
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures as PF
+from sklearn.linear_model import LinearRegression as LR
+from prophet import Prophet
+from datetime import datetime
 
-def selectBorough(borough):
-    if '서울' in borough:
-        return borough.split(' ')[1][:-1]
-    elif len(borough.split(' ')) == 1:
-        return borough[:-1]
-    else:
-        return borough.split(' ')[0]
+def findCodes(name):
+    code_all = pd.read_html('http://kind.krx.co.kr/corpgeneral/corpList.do?method=download')
+    code_df = code_all[0]
+    expr_str = f'''회사명 == '{name}' '''
+    code = code_df.query(expr_str)
+    target_code = '{:06d}'.format(code['종목코드'].values[0])
+    return target_code
     
-def setCCTV(df):
-    df1 = df.groupby(df['관리기관명'], as_index=False).sum().loc[:,['관리기관명', '카메라대수']].copy()
-    df1['관리기관명'] = df1['관리기관명'].apply(selectBorough)
-    df_cctv = df1
-    return df_cctv
+def devTrainTest(df, column, date):
+    df[column] = df[column].astype(int)
+    train_df = df.query(f'''index <= '{date}' ''')
+    test_df = df.query(f'''index > '{date}' ''')
+    return train_df, test_df
 
-def setPOP(df):
-    df_pop = df.copy()
-    df_pop.rename(columns={'동별(2)':'관리기관명', '2023 1/4.1':'총_인구수'}, inplace=True)
-    df_pop = df_pop[['관리기관명','총_인구수']]
-    df_pop.drop(index=[0,1], inplace=True)
-    return df_pop
-
-def mergedf(df1, df2):
-    new_df = pd.merge(setCCTV(df1), setPOP(df2))
-    new_df['총_인구수'].values
-    new_df['총_인구수'] = new_df['총_인구수'].astype(int)
-    return new_df
-
-def LRdf(df1, df2):
-    new_df = mergedf(df1, df2)
-    x = new_df['총_인구수'].values.reshape(-1,1)
-    y = new_df['카메라대수']
-    model = LinearRegression()
-    model.fit(x,y)
-    new_df['predict_lr'] = model.predict(x)
-    new_df['residual'] = new_df['카메라대수'] - new_df['predict_lr']
-    new_df_sort = new_df.sort_values(by='residual', ascending=False)
-    new_df_sort.reset_index(inplace=True)
-    new_df_sort.drop(columns='index', inplace=True)
-    return new_df_sort
-
-def PredictModelPlot(df1, df2):
-    new_df_sort = LRdf(df1, df2)
+def prePlot(df, column, date, degrees=10):
+    train_df, test_df = devTrainTest(df, column, date)
     
-    font_path = 'D:\\.spyder-py3\\class file\\NanumGothic.ttf'
-    fontprop = font_manager.FontProperties(fname=font_path, size=20)
-    
-    fig = plt.figure(figsize=(10,8))
-    ax = fig.add_subplot(1,1,1)
-    scatter = ax.scatter(new_df_sort['총_인구수'], new_df_sort['카메라대수'], c=new_df_sort['residual'], label='자치구')
-    ax.plot(new_df_sort['총_인구수'], new_df_sort['predict_lr'], c='r', label='예측값')
-    ax.legend(prop=fontprop)
-    ax.set_xlabel('총 인구수', fontproperties=fontprop)
-    ax.set_ylabel('카메라대수', fontproperties=fontprop)
-    plt.colorbar(scatter, ax=ax)
-    for n in range(3):
-        ax.text(new_df_sort.loc[n, '총_인구수']*1.02, new_df_sort.loc[n, '카메라대수']*1.01,
-                new_df_sort.loc[n, '관리기관명'], fontproperties=fontprop, size=10)
-    for n in range(21, 24):
-        ax.text(new_df_sort.loc[n, '총_인구수']*1.02, new_df_sort.loc[n, '카메라대수']*1.01,
-                new_df_sort.loc[n, '관리기관명'], fontproperties=fontprop, size=10)
+    polynomial_features = PF(degree=degrees, include_bias=False)
+    linear_regression = LR()
+    pipeline = Pipeline( [ ('polynomial_features', polynomial_features), ('linear_regression', linear_regression) ] )
+    x = np.arange(len(train_df.index)).reshape(-1,1)
+    y = train_df[column]
+    pipeline.fit(x, y)
+   
+    plt.figure(figsize=(10, 6))
+    plt.subplot(1, 1, 1)
+    plt.plot(x, pipeline.predict(x), label='Model', color='red')
+    plt.scatter(x, y, edgecolors='b', s=5, label='Samples', color='skyblue')
+    plt.title(f'Degree=degrees')
+    plt.legend(loc='best')
     plt.show()
+
+def prophetPlot(df, column, date, period):
+    train_df, test_df = devTrainTest(df, column, date)
+    
+    df_prophet = train_df[column]
+    df2 = df_prophet.reset_index()
+    df2.columns = ['ds', 'y']
+    m = Prophet()
+    m.fit(df2)
+    future = m.make_future_dataframe(periods=period)
+    forcast = m.predict(future)
+    m.plot(forcast)
+    plt.show()
+    
+def toDateTime(val):
+    return datetime.strptime(val, '%Y-%m-%d %H:%M:%S')
+
+def timeDfAgg(df, column1, column2, *args):
+    if type(df[column1][0]) != 'pandas._libs.tslibs.timestamps.Timestamp':
+        if df[column2].isna().any():
+            df.dropna(inplace=True)           
+        df[column1] = df[column1].apply(toDateTime)
+        df.set_index(column1, inplace=True)
+        df_re = df.resample('d')
+        result_df = df_re.agg(args)
+    else:
+        if df[column2].isna().any():
+            df.dropna(inpace=True)
+        df_re = df.resample('d')
+        result_df = df_re.agg(args)
+
+    return result_df
