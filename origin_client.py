@@ -23,6 +23,7 @@ import pandas as pd
 import platform
 from matplotlib import font_manager, rc
 import seaborn as sns
+import pandas_datareader.data as web
 #   %matplotlib -> 로컬에선 쓰지않고 코랩에선 라인에 그래프가 포함되게 해달라는
 #                  명령어.
 import copy
@@ -1523,3 +1524,41 @@ df_pop = pd.read_csv(file_path+'\\주민등록인구_20230828092210.csv')
 
 
 pm.PredictModelPlot(df_cctv, df_pop)
+
+#%%230831
+name = '삼성전자'
+code = pm.findCodes(name)
+df = web.DataReader(code, 'naver', start='2012-01-01', end='2023-08-29')
+
+pm.prePlot(df, 'Close', '2023-04-30', 20)
+pm. prophetPlot(df, 'Close', '2023-04-30', 107)
+
+
+file_path = 'D:\\.spyder-py3\\class file'
+df = pd.read_table(file_path + '\\temperature_ts_data', sep=',')
+new_df = pm.timeDfAgg(df, 'timestamp', 'temperature', 'mean', 'size')
+print(new_df)
+
+#%%230904
+
+
+file_path = 'D:\\download\\'
+df_fish_main = pd.read_excel(file_path + '통합 식품영양성분DB_수산물_20230831.xlsx')
+df_fish = df_fish_main.copy()
+df_fish = pm.refine(df_fish)
+top_ten = df_fish.loc[:,'단백질(micro)':'회분(micro)'].sum().sort_values(ascending=False)[:10].index
+
+df_meve_main = pd.read_excel(file_path +'통합 식품영양성분DB_농축산물_20230831.xlsx')
+df_meve = df_meve_main.copy()
+df_meve = pm.refine(df_meve)
+new_df_meve = df_meve.loc[:, '식품명']
+for column in top_ten:
+    if column in df_meve.columns:
+        new_df_meve = pd.concat([new_df_meve, df_meve.loc[:, column]], axis=1)
+
+result_df = pd.DataFrame()
+for column in new_df_meve.columns[1:]:
+    meve_sr = new_df_meve.loc[:,['식품명',column]].sort_values(by=column, ascending=False)[:3]['식품명'].values
+    add_df = pd.DataFrame(meve_sr.reshape(1,3), index = [column], columns = ['1순위', '2순위', '3순위'])
+    result_df = pd.concat([result_df, add_df])
+print(result_df)
