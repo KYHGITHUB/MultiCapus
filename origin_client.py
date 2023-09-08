@@ -1562,3 +1562,15 @@ for column in new_df_meve.columns[1:]:
     add_df = pd.DataFrame(meve_sr.reshape(1,3), index = [column], columns = ['1순위', '2순위', '3순위'])
     result_df = pd.concat([result_df, add_df])
 print(result_df)
+
+#%%230905
+
+url = 'https://en.wikipedia.org/wiki/List_of_American_exchange-traded_funds'
+resp = requests.get(url)
+soup = bs(resp.text, 'lxml')
+rows = soup.select('div > ul > li')
+etfs = pm.readweb(rows)
+df = pd.DataFrame(etfs)
+
+print(etfs.keys())
+print(df)
