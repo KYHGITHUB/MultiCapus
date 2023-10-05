@@ -1,0 +1,3 @@
+desc membertype;
+
+select * from membertype;

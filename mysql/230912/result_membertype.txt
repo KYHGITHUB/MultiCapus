@@ -1,0 +1,6 @@
+Field	Type	Null	Key	Default	Extra
+membertype_id	int	NO	PRI	NULL	auto_increment
+membertype	varchar(5)	YES		NULL	
+membertype_id	membertype
+1	nor
+2	dis

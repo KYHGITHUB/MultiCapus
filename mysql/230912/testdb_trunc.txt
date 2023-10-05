@@ -1,0 +1,9 @@
+use testdb;
+
+select * from users;
+
+truncate table users;
+
+select * from users;
+
+desc users;

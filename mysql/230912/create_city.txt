@@ -1,0 +1,1 @@
+create table city(id int, pref varchar(10), age tinyint, star tinyint, primary key(id));

@@ -1,0 +1,1 @@
+select product_id as 상품ID, product_name as 상품명 from product;

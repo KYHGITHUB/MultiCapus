@@ -1,0 +1,6 @@
+id,rank_value
+a,4
+b,2
+c,1
+dasd,3
+E,5

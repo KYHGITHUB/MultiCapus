@@ -1,0 +1,10 @@
+Field	Type	Null	Key	Default	Extra
+product_id	int	NO	PRI	NULL	auto_increment
+product_name	varchar(20)	YES		NULL	
+stock	int	YES		NULL	
+price	decimal(10,0)	YES		NULL	
+product_id	product_name	stock	price
+1	bathsalt	100	70
+2	handsoap	23	700
+3	aroma	4	120
+4	bathbomb	23	120

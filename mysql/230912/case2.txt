@@ -1,0 +1,8 @@
+select customer,
+case delivery_time
+when 1 then 'morning'
+when 2 then 'afternoon'
+when 3 then 'night'
+else 'nothing'
+end as delivery_time2
+from delivery;

@@ -1,0 +1,5 @@
+?í’ˆID	?í’ˆëª
+1	bathsalt
+2	handsoap
+3	aroma
+4	bathbomb

@@ -1,0 +1,1 @@
+create table productorder (order_id int, customer_id int, product_id int, quantity int, price decimal(10, 0), order_time datetime, primary key(order_id));

@@ -1,0 +1,6 @@
+alter table users
+change column id customer_id int not null,
+change column name customer_name varchar(45) null default null, 
+add column birthday date null after customer_name,
+add column membertype_id tinyint null after birthday, 
+rename to customer;

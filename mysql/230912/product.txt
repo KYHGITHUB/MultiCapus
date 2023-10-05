@@ -1,0 +1,5 @@
+product_id,product_name,stock,price
+1,bathsalt,100,70
+2,handsoap,23,700
+3,aroma,4,120
+4,bathbomb,23,120 

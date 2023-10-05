@@ -1,0 +1,7 @@
+select * from customer;
+
+truncate table customer;
+
+desc customer;
+
+select * from customer;

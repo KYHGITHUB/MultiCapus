@@ -1,0 +1,7 @@
+create table customers(id int, first_name varchar(40), last_name varchar(40), age int, country varchar(10), primary key (id));
+
+load data local infile 'D:\\.spyder-py3\\python_basic\\mysql\\230912\\customers.csv'
+into table customers fields terminated by ','
+lines terminated by '\n';
+
+select * from customers;

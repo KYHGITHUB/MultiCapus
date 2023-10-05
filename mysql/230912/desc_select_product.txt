@@ -1,0 +1,3 @@
+desc product;
+
+select * from product;

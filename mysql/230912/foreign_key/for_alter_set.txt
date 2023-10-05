@@ -1,0 +1,6 @@
+select * from information_schema.table_constraints where table_name='orders';
+
+alter table orders add foreign key(customer_id) references customers(id)
+on delete set null;
+
+select * from information_schema.table_constraints where table_name='orders';

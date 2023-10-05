@@ -1,0 +1,9 @@
+Database
+information_schema
+keos
+mysql
+performance_schema
+sakila
+sys
+testdb
+world

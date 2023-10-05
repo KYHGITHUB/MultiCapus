@@ -1,0 +1,5 @@
+use testdb;
+
+drop table users;
+
+show tables;

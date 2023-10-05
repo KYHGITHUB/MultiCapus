@@ -1,0 +1,7 @@
+create table orders(order_id int, item varchar(40), amount int, customer_id int, foreign key(customer_id) references customers(id) on delete cascade, primary key(order_id));
+
+load data local infile 'D:\\.spyder-py3\\python_basic\\mysql\\230912\\orders.csv'
+into table orders fields terminated by ','
+lines terminated by '\n';
+
+select * from orders;

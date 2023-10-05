@@ -1,0 +1,15 @@
+Field	Type	Null	Key	Default	Extra
+order_id	int	NO	PRI	NULL	auto_increment
+customer_id	int	YES		NULL	
+product_id	int	YES		NULL	
+quantity	int	YES		NULL	
+price	decimal(10,0)	YES		NULL	
+order_time	datetime	YES		NULL	
+order_id	customer_id	product_id	quantity	price	order_time
+1	4	1	12	840	2019-10-13 12:01:02
+2	5	3	5	600	2019-10-13 18:11:02
+3	2	2	2	1400	2019-10-14 10:43:02
+4	3	2	1	700	2019-10-15 23:15:02
+5	1	4	3	360	2019-10-15 23:37:02
+6	5	2	1	700	2019-10-16 11:23:02
+7	1	5	2	300	2019-10-18 12:42:02

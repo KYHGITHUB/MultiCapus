@@ -1,0 +1,11 @@
+use testdb;
+
+insert into users values('1', 'Evelyn');
+
+insert into users values('2', 'Jobu');
+
+insert into users values('3', 'Tupaki');
+
+insert into users values('4', 'Waymond');
+
+select * from users;

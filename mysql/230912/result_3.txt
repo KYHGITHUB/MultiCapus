@@ -1,0 +1,10 @@
+Database
+information_schema
+keos
+performance_schema
+testdb
+Tables_in_keos
+users
+Field	Type	Null	Key	Default	Extra
+id	int	NO	PRI	NULL	auto_increment
+name	varchar(255)	YES		NULL	

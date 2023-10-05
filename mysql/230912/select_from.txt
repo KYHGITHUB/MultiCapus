@@ -1,0 +1,5 @@
+select * from membertype;
+
+select * from product;
+
+select * from productorder;

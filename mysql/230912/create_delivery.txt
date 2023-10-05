@@ -1,0 +1,1 @@
+create table delivery(delivery_id int, customer varchar(20), quantity int, delivery_time int);

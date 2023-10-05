@@ -1,0 +1,3 @@
+membertype_id,membertype
+1,nor
+2,dis
