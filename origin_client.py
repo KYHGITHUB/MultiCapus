@@ -24,6 +24,11 @@ import platform
 from matplotlib import font_manager, rc
 import seaborn as sns
 import pandas_datareader.data as web
+import python_module as pm
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.datasets import load_iris
 #   %matplotlib -> 로컬에선 쓰지않고 코랩에선 라인에 그래프가 포함되게 해달라는
 #                  명령어.
 import copy
@@ -1670,3 +1675,54 @@ acc = pm.acc(y_test, pred)
 print(acc)
 print(check_df[check_df['bools']==False])
 print(check_df['bools'].value_counts())
+
+#%%231006
+iris = load_iris()
+iris_df = pd.DataFrame(iris.data, columns=iris.feature_names)
+iris_df['label'] = iris.target
+rf_clf_acc = pm.RFC(iris_df, 'label')
+print(f'랜덤 포레스트 예측 적중률 : {rf_clf_acc}')
+
+kf_acc = pm.KFd(iris_df, 'label', n_split=5)
+print(f'KFold 예측 적중률 : {kf_acc}')
+
+skf_acc = pm.SKF(iris_df, 'label', n_split=3)
+print(f'StratifiedKFold 예측 적중률 : {skf_acc}')
+
+scores = pm.CVS(iris_df, 'label', 5)
+print(f'cross_val_score 점수 : {scores}')
+print(f'cross_val_score 평균 점수 : {np.mean(scores)}')
+
+df = pm.GS(iris_df, 'label', 0.2, 3, [1,2,3,4,5,6,7,8,9,10], [1,2,3], 10)
+print('GridSearchCV 결과')
+print(df)
+
+#%%231012
+
+path_ = os.path.dirname(__file__)
+parent = os.path.dirname(path_)
+class_file_path = parent + '\\class file'
+
+df = pd.read_csv(class_file_path + '\\data_incomes.csv')
+df.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation',
+                  'relationship', 'race', 'sex', 'capital-gain', 'capital-loss', 'hours-per-week', 'native-country',
+                   'income']
+
+df = df.drop('education', axis=1)
+df = pd.get_dummies(df)
+#df.info()
+df = df.drop(df.columns[92], axis=1)
+X = df.iloc[:, :-1]
+y = df.iloc[:, -1]
+
+dt_clf = DecisionTreeClassifier(random_state=156)
+params={
+        'min_samples_split':[2, 3, 4, 5, 6, 8, 10],
+        'min_samples_leaf':[1, 0.01, 0.02, 0.03, 0.04],
+        'min_impurity_decrease':[0.0, 0.0005, 0.005, 0.05, 0.10, 0.15, 0.2],
+        'max_leaf_nodes':[10, 15, 20, 25, 30, 35, 40, 45, 50, None],
+        'max_features':[0.95, 0.90, 0.85, 0.80, 0.75, 0.70],
+        'max_depth':[None, 2,4,6,8]
+    }
+
+pm.grid_cv(X, y, dt_clf, params)

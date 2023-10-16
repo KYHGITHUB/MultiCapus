@@ -2,25 +2,50 @@ import python_module as pm
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.datasets import load_iris
+import os
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LinearRegression
+from xgboost import XGBRegressor
 
-#%%231006
-iris = load_iris()
-iris_df = pd.DataFrame(iris.data, columns=iris.feature_names)
-iris_df['label'] = iris.target
-rf_clf_acc = pm.RFC(iris_df, 'label')
-print(f'랜덤 포레스트 예측 적중률 : {rf_clf_acc}')
+path = os.path.dirname(__file__)
+parent = os.path.dirname(path)
+file_path = parent + '\\class file'
+df_bikes = pd.read_csv(file_path + '\\bike_rentals.csv')
 
-kf_acc = pm.KFd(iris_df, 'label', n_split=5)
-print(f'KFold 예측 적중률 : {kf_acc}')
+#df_bikes.info()
+df = pm.repair(df_bikes)
+#print(df)
+#df.to_csv('bike_cleaned.csv', index=False)
+X = df.iloc[:, :-1]
+y = df.iloc[:, -1]
+'''
+rmse = pm.get_lr(X, y)
+print(f'LinearRegression : {rmse}')
 
-skf_acc = pm.SKF(iris_df, 'label', n_split=3)
-print(f'StratifiedKFold 예측 적중률 : {skf_acc}')
+rmse = pm.get_xg(X, y)
+print(f'XGBRegressor : {rmse}')
 
-scores = pm.CVS(iris_df, 'label', 5)
-print(f'cross_val_score 점수 : {scores}')
-print(f'cross_val_score 평균 점수 : {np.mean(scores)}')
+rmse = pm.cross_score(LinearRegression(), X, y)
+print(f'LinearRegression - cross_val_score : {rmse.mean()}')
 
-df = pm.GS(iris_df, 'label', 0.2, 3, [1,2,3,4,5,6,7,8,9,10], [1,2,3], 10)
-print('GridSearchCV 결과')
-print(df)
+rmse = pm.cross_score(XGBRegressor(), X, y)
+print(f'XGBRegressor - cross_val_score : {rmse.mean()}')
+
+rmse = pm.gbm_test(X, y)
+print(f'gbm - DecisionTreeRegressor : {rmse}')
+'''
+learning_rate_values = [0.001, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.5, 1.0]
+rmse_dict={}
+for value in learning_rate_values:
+    rmse = pm.GBM(X, y, value)   
+    rmse_dict[rmse] = value
+best_learning_rate = rmse_dict[min(rmse_dict)]
+print(f'min_rmse : {min(rmse_dict)}\nlearning_rate : {best_learning_rate}')
+
+
+depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+rmse_dict = pm.GBM_depth(X, y, depths)
+best_depth = rmse_dict[min(rmse_dict)]
+print(f'min_rmse : {min(rmse_dict)}\ndepth : {best_depth}')
+#pm.plot_gbm_rmse(rmse_list, depths, 'depths')
+
