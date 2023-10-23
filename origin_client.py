@@ -1849,4 +1849,13 @@ df['rush_hour'] = df.apply(pm.rush_hour, args=('hour', 'weekend'), axis=1)
 #print(df.head())
 #print(df.cab_type.value_counts())
 df.info()
+#%%231020
+'''
+X = np.array([[3,4],[1,4],[2,3],[6,-1],[7,-1],[5,-3]] )
+y = np.array([-1,-1, -1, 1, 1 , 1 ])
+
+pm.svc_plot(X, y)
+'''
+cancer=load_breast_cancer()
+print(cancer.data)
 
