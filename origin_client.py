@@ -1859,3 +1859,8 @@ pm.svc_plot(X, y)
 cancer=load_breast_cancer()
 print(cancer.data)
 
+#%%231023
+
+filepath = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
+df = pd.read_csv(filepath + '\\santander_train.csv', encoding='latin-1')
+print(df.head())
