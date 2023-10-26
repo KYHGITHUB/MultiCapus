@@ -2039,3 +2039,127 @@ def svc_plot(X, y):
 
 #def cancer_svc_plot(X, y):
     
+
+'''
+#%%231024
+
+def get_best_degree(model, degrees, X, y):
+    result = {}
+    for deg in degrees:
+        pipe = Pipeline([(PolynomialFeatures().__class__.__name__, PolynomialFeatures(degree=deg, include_bias=False)), (model.__class__.__name__, model)])
+        scores = cross_val_score(pipe, X, y, scoring='neg_mean_squared_error', cv=10)
+        pipe.fit(X, y)
+        result[deg] = (pipe, -scores.mean(), scores.std())
+    
+    mses = {}
+    for i in result:
+        #w = result[i][0].named_steps[model.__class__.__name__].coef_
+        mses[i] = result[i][1]
+
+    best_degree = min(mses, key=mses.get)
+
+    X_test = np.linspace(0, 1, 100)
+    y_test = true_func(X_test)
+    X_test = X_test.reshape(-1, 1)
+    plt.figure(figsize=(14,5))
+    num=0
+    for i in result:
+        pipelines = result[i][0]
+        mean_score = result[i][1]
+        std_score = result[i][2]
+        
+        pred = pipelines.predict(X_test)
+        num+=1
+        ax = plt.subplot(1, len(degrees), num)
+        plt.plot(X_test, pred, label = 'model')
+        plt.plot(X, y, 'ko', label='samples')
+        plt.plot(X_test, y_test, label = 'True function')
+        plt.legend(loc='best')
+        plt.xlabel('x')
+        plt.ylabel('y', rotation=0)
+        plt.title(f'Degree : {i}\nMSE : {mean_score}')
+        plt.setp(ax, xticks=(), yticks=())
+    plt.show()
+
+    return best_degree
+        
+def true_func(X):
+    return np.cos(1.5 * np.pi * X)
+'''
+
+#%%231025
+
+def get_linear_reg_eval(model_name, params=None, X=None, y=None):
+    coef_df = pd.DataFrame()
+    for a in params:
+        if model_name == 'Ridge':
+            model = Ridge(alpha=a)
+        if model_name == 'Lasso':
+            model = Lasso(alpha=a)
+        if model_name == 'ElasticNet':
+            model = ElasticNet(alpha=a, l1_ratio=0.7)
+
+        model.fit(X, y)
+        coef_sr = pd.Series(model.coef_, index=X.columns)
+        column_name = 'alpha:'+str(a)
+        coef_df[column_name] = coef_sr
+        neg_mse_score = cross_val_score(model, X, y, scoring='neg_mean_squared_error', cv=10)
+        rmse = np.sqrt(-neg_mse_score)
+        avg_rmse = np.mean(rmse)
+        print(f'== alpha : {a} ==\navg_rmse : {np.round(avg_rmse, 4)}')
+    return coef_df
+ 
+def rm_outlier(x, y):
+    q1 = y.quantile(0.25)
+    q3 = y.quantile(0.75)
+    iqr = q3 - q1
+    fence_low = q1-1.5*iqr
+    fence_high = q3+1.4*iqr
+    outlier = []
+    for i in y:
+        if i<fence_low or i>fence_high:
+            outlier.append(i)
+    print('outlier : ', np.round((len(outlier)/y.shape[0])*100, 4))
+    x = x[(y>fence_low)&(y<fence_high)]
+    y = y[(y>fence_low)&(y<fence_high)]
+    return x, y
+
+def visualize_target(y):
+    fig = plt.figure(constrained_layout=True, figsize=(12,6))
+    grid = gridspec.GridSpec(ncols=5, nrows=5, figure=fig)
+
+    ax1 = fig.add_subplot(grid[0:2, :4])
+    ax1.set_title('Histogram')
+    sns.distplot(y, norm_hist=True,fit=norm, ax = ax1,color='indianred')
+
+    ax2 = fig.add_subplot(grid[2:, :4])
+    ax2.set_title('QQ_plot')
+    stats.probplot(y, plot = ax2)
+
+    ax3 = fig.add_subplot(grid[:, 4])
+    ax3.set_title('Box Plot')
+    sns.boxplot(y=y, orient='v', ax = ax3,color='indianred')
+    plt.show()
+
+def Regression_process(X, y):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=156)
+
+    lr = LinearRegression().fit(X_train, y_train)
+    print(f'R2 (train set, test set) : {np.round(lr.score(X_train, y_train), 4)}, {np.round(lr.score(X_test, y_test), 4)}')
+
+def data_process(X, y):
+    X, y = rm_outlier(X, y)
+    visualize_target(y)
+    Regression_process(X, y)
+    lr = LinearRegression()
+    mse = cross_val_score(lr, X, y, scoring='neg_mean_squared_error', cv=5)
+    rmse = np.sqrt(-mse)
+    avg_rmse = np.mean(rmse)
+    print(f'LinearRegression_avg_rmse : {avg_rmse}')
+    ridge=Ridge(alpha=10)
+    mse = cross_val_score(ridge, X, y, scoring='neg_mean_squared_error', cv=5)
+    rmse = np.sqrt(-mse)
+    avg_rmse = np.mean(rmse)
+    print(f'Ridge_avg_rmse : {avg_rmse}')
+    return X, y
+    

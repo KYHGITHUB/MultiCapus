@@ -1864,3 +1864,53 @@ print(cancer.data)
 filepath = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
 df = pd.read_csv(filepath + '\\santander_train.csv', encoding='latin-1')
 print(df.head())
+
+'''
+#%%231024
+
+data = {'x' : [13, 19, 16, 14, 15, 14],
+        'y' : [40, 83, 62, 48, 58, 43]}
+
+X = pd.DataFrame(data['x'])
+lr = LinearRegression()
+lr.fit(X, data['y'])
+pred = lr.predict(X)
+#plt.plot(data['x'], data['y'], 'bo')
+#plt.plot(X, pred, 'k--')
+#plt.show()
+
+#residuals = data['y'] - pred
+#print((residuals**2).sum() / len(X))
+
+#print(f"R2_score : {lr.score(X, data['y'])}")
+np.random.seed(0)
+n_samples = 30
+X = np.sort(np.random.rand(n_samples))
+y = pm.true_func(X) + np.random.randn(n_samples)*0.1
+X = X.reshape(-1, 1)
+
+degrees = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+best_degree = pm.get_best_degree(LinearRegression(), degrees, X, y)
+print(f'best_degree : {best_degree}')
+'''
+#%%231025
+
+file = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
+'''
+df = pd.read_csv(file+'\\boston_house.csv')
+df.drop('Unnamed: 0', axis=1, inplace=True)
+#df.info()
+X_data = df.iloc[:, :-1]
+y_target = df.PRICE
+
+alphas = [0.07, 0.1, 0.5, 1, 3]
+result = pm.get_linear_reg_eval('Ridge', alphas, X_data, y_target)
+print(result.sort_values(by=result.columns[0], ascending=False))
+'''
+df = pd.read_csv(file+'\\California_Houses.csv')
+#df.info()
+df.drop(['Latitude', 'Longitude'], axis=1, inplace=True)
+X = df.iloc[:, 1:]
+y = df.Median_House_Value
+
+X, y = pm.data_process(X, y)
