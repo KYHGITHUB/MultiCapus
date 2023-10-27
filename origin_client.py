@@ -1914,3 +1914,11 @@ X = df.iloc[:, 1:]
 y = df.Median_House_Value
 
 X, y = pm.data_process(X, y)
+#%%231026
+
+file = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
+card = pd.read_csv(file + '\\creditcard.csv')
+#card.info()
+card.drop('Time', axis=1, inplace=True)
+
+pm.case_get(card)
