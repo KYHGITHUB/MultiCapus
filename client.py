@@ -10,30 +10,29 @@ from sklearn.model_selection import StratifiedKFold, train_test_split
 from urllib import request
 from sklearn.datasets import load_iris, load_breast_cancer
 import seaborn as sns
+from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+#%%231030
 
-#%%231027
+iris = load_iris()
+X_features = iris.data
+y_target = iris.target
 
-file = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
+model_ = RandomForestClassifier(random_state=42)
+model = pm.get_model_down_dim(model_, X_features, y_target)
 
-house_df = pd.read_csv(file+'\\hpr_data.csv')
-#house_df.info()
-#print(house_df.isna().sum().sort_values(ascending=False)[:10])
-#print(len(house_df))
-#print(1460*0.2)
-#print(house_df.isna().sum()[house_df.isna().sum()>1460*0.2])
-del_list = list(house_df.isna().sum()[house_df.isna().sum()>1460*0.2].index)
-#print(del_list)
-house_df.drop(del_list, axis=1, inplace=True)
-print(house_df.dtypes)
-#house_df.fillna(
-#nan_list = list(house_df.isna().sum().sort_values(ascending=False)[:13].index)
-#print(house_df.dtypes[nan_list])
-X = house_df.drop('PRICE', axis=1)
-y = house_df.PRICE
-y_log = np.log1p(y)
+test_iris_idx = np.random.choice(len(iris.data), int(len(iris.data)*0.3))
+test_iris_data = iris.data[test_iris_idx]
+test_iris_target = iris.target[test_iris_idx]
+test_iris_data = StandardScaler().fit_transform(test_iris_data)
+test_iris_data = PCA(n_components=2).fit_transform(test_iris_data)
 
-#sns.distplot(y)
-#plt.show()
-#sns.distplot(y_log)
-#plt.show()
-#X_train, X_test, y_train, y_test = train_test_split(X, y_log, test_size=0.2, random_state=156)
+
+pred = model.predict(test_iris_data)
+#print(accuracy_score(test_iris_target, pred))
+
+plt.scatter(test_iris_data[:, 0], test_iris_data[:, 1], c=test_iris_target)
+plt.scatter(test_iris_data[:, 0], test_iris_data[:, 1], c=pred, marker='x')
+plt.show()

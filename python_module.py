@@ -19,6 +19,22 @@ import matplotlib.gridspec as gridspec
 import seaborn as sns
 from scipy.stats import norm
 from scipy import stats
+from sklearn.decomposition import PCA
 
-#%%231027
+#%%231030
 
+def get_model_down_dim(model, X_features, y_target):
+    pca = PCA(n_components=2)
+    pca.fit(X_features)
+    X_features_pca = pca.transform(X_features)
+    X_train, X_test, y_train, y_test = train_test_split(X_features_pca, y_target, random_state=2)
+    
+    scaler = StandardScaler().fit(X_train)
+    X_train_scaled = scaler.transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    clf = model
+    clf.fit(X_train, y_train)
+    pred = clf.predict(X_test)
+    print(f'{clf.__class__.__name__} 의 정확도 : {accuracy_score(y_test, pred)}')
+    return clf

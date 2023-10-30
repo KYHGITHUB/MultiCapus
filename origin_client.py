@@ -1922,3 +1922,30 @@ card = pd.read_csv(file + '\\creditcard.csv')
 card.drop('Time', axis=1, inplace=True)
 
 pm.case_get(card)
+
+#%%231027
+
+file = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
+
+house_df = pd.read_csv(file+'\\hpr_data.csv')
+#house_df.info()
+#print(house_df.isna().sum().sort_values(ascending=False)[:10])
+#print(len(house_df))
+#print(1460*0.2)
+#print(house_df.isna().sum()[house_df.isna().sum()>1460*0.2])
+del_list = list(house_df.isna().sum()[house_df.isna().sum()>1460*0.2].index)
+#print(del_list)
+house_df.drop(del_list, axis=1, inplace=True)
+print(house_df.dtypes)
+#house_df.fillna(
+#nan_list = list(house_df.isna().sum().sort_values(ascending=False)[:13].index)
+#print(house_df.dtypes[nan_list])
+X = house_df.drop('PRICE', axis=1)
+y = house_df.PRICE
+y_log = np.log1p(y)
+
+#sns.distplot(y)
+#plt.show()
+#sns.distplot(y_log)
+#plt.show()
+#X_train, X_test, y_train, y_test = train_test_split(X, y_log, test_size=0.2, random_state=156)
