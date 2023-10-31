@@ -14,25 +14,34 @@ from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-#%%231030
-
+import datetime as dt
+#%%231031
+'''
 iris = load_iris()
-X_features = iris.data
-y_target = iris.target
+irisDF = pd.DataFrame(iris.data, columns=iris.feature_names)
+irisDF['target'] = iris.target
 
-model_ = RandomForestClassifier(random_state=42)
-model = pm.get_model_down_dim(model_, X_features, y_target)
-
-test_iris_idx = np.random.choice(len(iris.data), int(len(iris.data)*0.3))
-test_iris_data = iris.data[test_iris_idx]
-test_iris_target = iris.target[test_iris_idx]
-test_iris_data = StandardScaler().fit_transform(test_iris_data)
-test_iris_data = PCA(n_components=2).fit_transform(test_iris_data)
-
-
-pred = model.predict(test_iris_data)
-#print(accuracy_score(test_iris_target, pred))
-
-plt.scatter(test_iris_data[:, 0], test_iris_data[:, 1], c=test_iris_target)
-plt.scatter(test_iris_data[:, 0], test_iris_data[:, 1], c=pred, marker='x')
-plt.show()
+ax = pm.cluster_(irisDF, 'target', pca=True)
+ax.show()
+ax = pm.cluster_(irisDF, 'target', pca=False)
+ax.show()
+'''
+file = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
+retail_df = pd.read_excel(file+'\\Online_Retail.xlsx')
+pd.set_option('display.max_columns', None)
+#print(retail_df.head())
+#retail_df.info()
+#print(retail_df.Country.value_counts())
+retail_df = retail_df[retail_df.Country=='United Kingdom']
+retail_df = retail_df[retail_df.Quantity>0]
+retail_df = retail_df[retail_df.UnitPrice>0]
+retail_df = retail_df[retail_df.CustomerID.notnull()]
+retail_df['sale_amount'] = retail_df.Quantity * retail_df.UnitPrice
+retail_df['CustomerID'] = retail_df.CustomerID.astype(int)
+#retail_df.info()
+#print(retail_df.head())
+cust_df = retail_df.groupby('CustomerID').agg({'InvoiceNo':'count', 'InvoiceDate':'max', 'sale_amount':'sum'})
+cust_df.rename(columns={'InvoiceNo':'Frequency', 'InvoiceDate':'Recency', 'sale_acount':'Monetary'}, inplace=True)
+cust_df['Recency'] = dt.datetime(2011, 12, 11) - cust_df['Recency']
+cust_df['Recency'] = cust_df['Recency'].apply(lambda x : x.days)
+cust_df.info()
