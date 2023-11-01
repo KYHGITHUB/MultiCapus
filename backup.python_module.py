@@ -2226,3 +2226,37 @@ def get_model_down_dim(model, X_features, y_target):
     pred = clf.predict(X_test)
     print(f'{clf.__class__.__name__} 의 정확도 : {accuracy_score(y_test, pred)}')
     return clf
+
+#%%231031
+
+def cluster_(df, target_name, pca=True):
+    if pca:
+        component = int(input('n_components를 입력하세요: '))
+        pca_ = PCA(n_components=component)
+        pca_transformed = pca_.fit_transform(df.iloc[:, :-1])
+        df['pca_x'] = pca_transformed[:, 0]
+        df['pca_y'] = pca_transformed[:, 1]
+        
+        kmeans = KMeans(n_clusters=len(df[target_name].unique()), init='k-means++', max_iter=500, random_state=0)
+        kmeans.fit(df.loc[:, ['pca_x', 'pca_y']])
+        df['pca_cluster'] = kmeans.labels_
+        print(df.groupby(['target', 'pca_cluster']))
+        markers=['s', 'x', 'o']
+        for i in range(len(df[target_name].unique())):
+            plt.scatter(df[df.pca_cluster==i].pca_x, df[df.pca_cluster==i].pca_y, marker=markers[i])
+        plt.title('PCA_CLUSTER')
+        return plt
+    else:
+        kmeans = KMeans(n_clusters=len(df[target_name].unique()), init='k-means++', max_iter=500, random_state=0)
+        kmeans.fit(df.iloc[:, :-1])
+        df['cluster'] = kmeans.labels_
+        print(df.groupby(['target', 'cluster']).count())
+        markers=['s', 'x', 'o']
+        for i in range(len(df[target_name].unique())):
+            plt.scatter(df[df.cluster==i].pca_x, df[df.cluster==i].pca_y, marker=markers[i])
+        plt.title('CLUSTER')
+        return plt
+
+def cust_cluster(df):
+    kmeans = KMeans(n_clusters=5, init='k-means++', max_iter=1000, random_state=0)
+    labels = kmeans.fit_predict(df.values)

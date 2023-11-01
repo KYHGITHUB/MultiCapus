@@ -1972,3 +1972,34 @@ pred = model.predict(test_iris_data)
 plt.scatter(test_iris_data[:, 0], test_iris_data[:, 1], c=test_iris_target)
 plt.scatter(test_iris_data[:, 0], test_iris_data[:, 1], c=pred, marker='x')
 plt.show()
+
+#%%231031
+'''
+iris = load_iris()
+irisDF = pd.DataFrame(iris.data, columns=iris.feature_names)
+irisDF['target'] = iris.target
+
+ax = pm.cluster_(irisDF, 'target', pca=True)
+ax.show()
+ax = pm.cluster_(irisDF, 'target', pca=False)
+ax.show()
+'''
+file = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
+retail_df = pd.read_excel(file+'\\Online_Retail.xlsx')
+pd.set_option('display.max_columns', None)
+#print(retail_df.head())
+#retail_df.info()
+#print(retail_df.Country.value_counts())
+retail_df = retail_df[retail_df.Country=='United Kingdom']
+retail_df = retail_df[retail_df.Quantity>0]
+retail_df = retail_df[retail_df.UnitPrice>0]
+retail_df = retail_df[retail_df.CustomerID.notnull()]
+retail_df['sale_amount'] = retail_df.Quantity * retail_df.UnitPrice
+retail_df['CustomerID'] = retail_df.CustomerID.astype(int)
+#retail_df.info()
+#print(retail_df.head())
+cust_df = retail_df.groupby('CustomerID').agg({'InvoiceNo':'count', 'InvoiceDate':'max', 'sale_amount':'sum'})
+cust_df.rename(columns={'InvoiceNo':'Frequency', 'InvoiceDate':'Recency', 'sale_acount':'Monetary'}, inplace=True)
+cust_df['Recency'] = dt.datetime(2011, 12, 11) - cust_df['Recency']
+cust_df['Recency'] = cust_df['Recency'].apply(lambda x : x.days)
+cust_df.info()

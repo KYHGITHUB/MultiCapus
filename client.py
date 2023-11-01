@@ -15,33 +15,29 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import datetime as dt
-#%%231031
-'''
-iris = load_iris()
-irisDF = pd.DataFrame(iris.data, columns=iris.feature_names)
-irisDF['target'] = iris.target
+import nltk
+from scipy import sparse
+from sklearn.datasets import fetch_20newsgroups
+#231101
 
-ax = pm.cluster_(irisDF, 'target', pca=True)
-ax.show()
-ax = pm.cluster_(irisDF, 'target', pca=False)
-ax.show()
+text_sample ='''When I choose to see the good side of things, I'm not being naive. It is strategic and necessary. It’s how I’ve learned to survive through everything.'''
 '''
+nltk.download('stopwords')
+#nltk.download('all')
+stopwords_list = nltk.corpus.stopwords.words('english')
+re_text_sample = pm.token_text(text_sample, stopwords_list)
+print(re_text_sample)
+
+
 file = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
-retail_df = pd.read_excel(file+'\\Online_Retail.xlsx')
-pd.set_option('display.max_columns', None)
-#print(retail_df.head())
-#retail_df.info()
-#print(retail_df.Country.value_counts())
-retail_df = retail_df[retail_df.Country=='United Kingdom']
-retail_df = retail_df[retail_df.Quantity>0]
-retail_df = retail_df[retail_df.UnitPrice>0]
-retail_df = retail_df[retail_df.CustomerID.notnull()]
-retail_df['sale_amount'] = retail_df.Quantity * retail_df.UnitPrice
-retail_df['CustomerID'] = retail_df.CustomerID.astype(int)
-#retail_df.info()
-#print(retail_df.head())
-cust_df = retail_df.groupby('CustomerID').agg({'InvoiceNo':'count', 'InvoiceDate':'max', 'sale_amount':'sum'})
-cust_df.rename(columns={'InvoiceNo':'Frequency', 'InvoiceDate':'Recency', 'sale_acount':'Monetary'}, inplace=True)
-cust_df['Recency'] = dt.datetime(2011, 12, 11) - cust_df['Recency']
-cust_df['Recency'] = cust_df['Recency'].apply(lambda x : x.days)
-cust_df.info()
+review_df = pd.read_csv(file + '\\labeledTrainData.tsv', header=0, sep='\t', quoting=3)
+print(review_df.head())
+
+data = np.array([1, 5, 1, 4, 3, 2, 5, 6, 3, 2, 7, 8, 1])
+col_pos = np.array([2, 5, 0 ,1 , 3, 4, 5, 1, 3, 0, 3, 5, 0])
+row_pos_idx = np.array([0, 2, 7, 9, 10, 12, 13])
+print(sparse.csr_matrix((data, col_pos, row_pos_idx)).toarray())
+'''
+news = fetch_20newsgroups()
+print(news.keys())
+
