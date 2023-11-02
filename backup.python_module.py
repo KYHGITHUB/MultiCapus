@@ -2260,3 +2260,25 @@ def cluster_(df, target_name, pca=True):
 def cust_cluster(df):
     kmeans = KMeans(n_clusters=5, init='k-means++', max_iter=1000, random_state=0)
     labels = kmeans.fit_predict(df.values)
+
+#%%231101
+nltk.download('punkt')
+#nltk.download('stopwords')
+#nltk.download('all')
+def token_text(text, stopwords_list):
+    sentences = sent_tokenize(text)
+    word_list = []
+    remove_dict = {}
+    for i in string.punctuation:
+        remove_dict[ord(i)] = None
+    for sentence in sentences:
+        sentence = sentence.translate(remove_dict)
+        words = word_tokenize(sentence)
+        token_list = []
+        for word in words:
+            word = word.lower()
+            if word not in stopwords_list and len(word) > 1:
+                token_list.append(word)
+        word_list.append(token_list)
+    return word_list
+    

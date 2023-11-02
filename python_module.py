@@ -28,24 +28,21 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from scipy import sparse
 
-#%%231101
-nltk.download('punkt')
-#nltk.download('stopwords')
-#nltk.download('all')
-def token_text(text, stopwords_list):
-    sentences = sent_tokenize(text)
-    word_list = []
-    remove_dict = {}
-    for i in string.punctuation:
-        remove_dict[ord(i)] = None
-    for sentence in sentences:
-        sentence = sentence.translate(remove_dict)
-        words = word_tokenize(sentence)
-        token_list = []
-        for word in words:
-            word = word.lower()
-            if word not in stopwords_list and len(word) > 1:
-                token_list.append(word)
-        word_list.append(token_list)
-    return word_list
-    
+#%%231102
+nltk.download('all')
+def LemTokens(tokens):
+    lemmar = WordNetLemmatizer()
+    return [lemmar.lemmatize(token) for token in tokens]
+
+def LemNormalize(text):
+    remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
+    return LemTokens(nltk.word_tokenize(text.lower().translate(remove_punct_dict)))
+
+def cluster_text(document_df):
+    tfidf_vect = TfidfVectorizer(tokenizer=LemNormalize, stop_words='english', ngram_range=(1,2), max_df = 0.85, min_df=0.05)
+
+    feature_vect = tfidf_vect.fit_transform(document_df.opinion_text)
+    km_cluster = KMeans(n_clusters=3, max_iter=10000, random_state=0)
+    cluster_label = km_cluster.fit_predict(feature_vect)
+    document_df['cluster_label'] = cluster_label
+    return document_df

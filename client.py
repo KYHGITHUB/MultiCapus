@@ -18,26 +18,25 @@ import datetime as dt
 import nltk
 from scipy import sparse
 from sklearn.datasets import fetch_20newsgroups
-#231101
-
-text_sample ='''When I choose to see the good side of things, I'm not being naive. It is strategic and necessary. It’s how I’ve learned to survive through everything.'''
-'''
-nltk.download('stopwords')
-#nltk.download('all')
-stopwords_list = nltk.corpus.stopwords.words('english')
-re_text_sample = pm.token_text(text_sample, stopwords_list)
-print(re_text_sample)
-
+import glob
+#%%231102
 
 file = os.path.dirname(os.path.dirname(__file__)) + '\\class file'
-review_df = pd.read_csv(file + '\\labeledTrainData.tsv', header=0, sep='\t', quoting=3)
-print(review_df.head())
-
-data = np.array([1, 5, 1, 4, 3, 2, 5, 6, 3, 2, 7, 8, 1])
-col_pos = np.array([2, 5, 0 ,1 , 3, 4, 5, 1, 3, 0, 3, 5, 0])
-row_pos_idx = np.array([0, 2, 7, 9, 10, 12, 13])
-print(sparse.csr_matrix((data, col_pos, row_pos_idx)).toarray())
-'''
-news = fetch_20newsgroups()
-print(news.keys())
-
+file_list = os.listdir(file)
+for i in file_list:
+    if i.startswith('top'):
+        file_path = i
+file2 = file +'\\'+file_path
+file2_list = os.listdir(file2)
+for i in file2_list:
+    last_folder = i
+last_path = file + '\\' + file_path + '\\' + last_folder
+files = glob.glob(last_path + '\\*.data')
+file_name = [file.split('\\')[5].split('.')[0] for file in files]
+doc_list = []
+for file in files:
+    with open(file, 'r', encoding='latin-1') as f:
+        doc_list.append(f.read())
+document_df = pd.DataFrame({'filename':file_name, 'opinion_text':doc_list})
+document_df_ = pm.cluster_text(document_df)
+print(document_df_)
