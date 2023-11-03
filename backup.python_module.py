@@ -2281,4 +2281,21 @@ def token_text(text, stopwords_list):
                 token_list.append(word)
         word_list.append(token_list)
     return word_list
-    
+#%%231102
+nltk.download('all')
+def LemTokens(tokens):
+    lemmar = WordNetLemmatizer()
+    return [lemmar.lemmatize(token) for token in tokens]
+
+def LemNormalize(text):
+    remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
+    return LemTokens(nltk.word_tokenize(text.lower().translate(remove_punct_dict)))
+
+def cluster_text(document_df):
+    tfidf_vect = TfidfVectorizer(tokenizer=LemNormalize, stop_words='english', ngram_range=(1,2), max_df = 0.85, min_df=0.05)
+
+    feature_vect = tfidf_vect.fit_transform(document_df.opinion_text)
+    km_cluster = KMeans(n_clusters=3, max_iter=10000, random_state=0)
+    cluster_label = km_cluster.fit_predict(feature_vect)
+    document_df['cluster_label'] = cluster_label
+    return document_df

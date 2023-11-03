@@ -28,21 +28,25 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from scipy import sparse
 
-#%%231102
-nltk.download('all')
-def LemTokens(tokens):
-    lemmar = WordNetLemmatizer()
-    return [lemmar.lemmatize(token) for token in tokens]
+#%%231103 
 
-def LemNormalize(text):
-    remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
-    return LemTokens(nltk.word_tokenize(text.lower().translate(remove_punct_dict)))
+#활성화 함수
+def step_func(x):
+    y = x>0
+    return y.astype('int')
 
-def cluster_text(document_df):
-    tfidf_vect = TfidfVectorizer(tokenizer=LemNormalize, stop_words='english', ngram_range=(1,2), max_df = 0.85, min_df=0.05)
+def sigmoid(x): # or scipy.special.expit
+    return 1/(1+np.exp(-x))
 
-    feature_vect = tfidf_vect.fit_transform(document_df.opinion_text)
-    km_cluster = KMeans(n_clusters=3, max_iter=10000, random_state=0)
-    cluster_label = km_cluster.fit_predict(feature_vect)
-    document_df['cluster_label'] = cluster_label
-    return document_df
+def relu(x):
+    return np.maximum(0, x)
+
+def identity_func(x):
+    return x
+
+def softmax(a):
+    c = np.max(a)
+    exp_a = np.exp(a-c) # 오버플로우 대책
+    sum_exp_a = np.sum(exp_a)
+    y = exp_a / sum_exp_a
+    return y
