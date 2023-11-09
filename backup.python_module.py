@@ -2299,3 +2299,26 @@ def cluster_text(document_df):
     cluster_label = km_cluster.fit_predict(feature_vect)
     document_df['cluster_label'] = cluster_label
     return document_df
+
+#%%231103 
+
+#활성화 함수
+def step_func(x):
+    y = x>0
+    return y.astype('int')
+
+def sigmoid(x): # or scipy.special.expit
+    return 1/(1+np.exp(-x))
+
+def relu(x):
+    return np.maximum(0, x)
+
+def identity_func(x):
+    return x
+
+def softmax(a):
+    c = np.max(a)
+    exp_a = np.exp(a-c) # 오버플로우 대책
+    sum_exp_a = np.sum(exp_a)
+    y = exp_a / sum_exp_a
+    return y
