@@ -2322,3 +2322,19 @@ def softmax(a):
     sum_exp_a = np.sum(exp_a)
     y = exp_a / sum_exp_a
     return y
+
+#%%231109
+
+def model_fn(X_data, y_target, optimizer_, epochs, dropout=None):
+    train_scaled, val_scaled, train_target, val_target = train_test_split(X_data, y_target, test_size=0.2, random_state=42)
+    model = keras.Sequential()
+    model.add(keras.layers.Flatten(input_shape=(28, 28)))
+    model.add(keras.layers.Dense(100, activation='relu'))
+    model.add(keras.layers.Dense(10, activation='softmax'))
+
+    opt = optimizer_
+    model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics='accuracy')
+
+    history = model.fit(train_scaled, train_target, epochs=epochs, batch_size=128, validation_data=(val_scaled, val_target))
+
+    return history, model

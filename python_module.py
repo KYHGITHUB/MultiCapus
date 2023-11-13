@@ -28,18 +28,25 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from scipy import sparse
 import keras
-#%%231109
 
-def model_fn(X_data, y_target, optimizer_, epochs, dropout=None):
-    train_scaled, val_scaled, train_target, val_target = train_test_split(X_data, y_target, test_size=0.2, random_state=42)
-    model = keras.Sequential()
-    model.add(keras.layers.Flatten(input_shape=(28, 28)))
+
+
+#%%231113
+
+def make_conv2d(train_data, train_target, val_data, val_target, user_layer=None, optimizer_='adam', epoch=20):
+    model = keras.models.Sequential()
+    model.add(keras.layers.Conv2D(32, kernel_size=3, activation='relu', padding='same', input_shape=train_data.shape[1:]))
+    model.add(keras.layers.MaxPooling2D(4))
+    model.add(keras.layers.Conv2D(64, kernel_size=3, activation='relu', padding='same'))
+    model.add(keras.layers.MaxPooling2D(7))
+    model.add(keras.layers.Flatten())
     model.add(keras.layers.Dense(100, activation='relu'))
+    if user_layer:
+        model.add(keras.layers.Dropout(0.4))
     model.add(keras.layers.Dense(10, activation='softmax'))
-
     opt = optimizer_
     model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics='accuracy')
-
-    history = model.fit(train_scaled, train_target, epochs=epochs, batch_size=128, validation_data=(val_scaled, val_target))
-
-    return history, model
+    save_best_model = keras.callbacks.ModelCheckpoint('best_cnn_model.h5', save_best_only=True)
+    early_stopping = keras.callbacks.EarlyStopping(patience=2, restore_best_weights=True)
+    history = model.fit(train_data, train_target, epochs=epoch, validation_data=(val_data, val_target), callbacks=[save_best_model, early_stopping])
+    return model, history
