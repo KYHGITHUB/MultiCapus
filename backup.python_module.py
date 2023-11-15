@@ -2358,3 +2358,22 @@ def make_conv2d(train_data, train_target, val_data, val_target, user_layer=None,
     early_stopping = keras.callbacks.EarlyStopping(patience=2, restore_best_weights=True)
     history = model.fit(train_data, train_target, epochs=epoch, validation_data=(val_data, val_target), callbacks=[save_best_model, early_stopping])
     return model, history
+
+#%%231114
+def make_RNN(train_data, train_target, val_data, val_target, last_floor, opt, loss_, metrics_, checkpoint=None, early_stopping=None, epoch=20, batch=32):
+    model = keras.Sequential()
+    model.add(keras.layers.SimpleRNN(8, input_shape=(train_data.shape[1], train_data.shape[2])))
+    model.add(keras.layers.Dense(1, activation=last_floor))
+    
+    model.compile(optimizer=opt, loss=loss_, metrics=metrics_)
+    
+    callback_list = []
+    if checkpoint:
+        checkpoint_cb = keras.callbacks.ModelCheckpoint('best_simpleRNN_model.h5', save_best_only=True)
+        callback_list.append(checkpoint_cb)
+    if early_stopping:
+        early_stopping_cb = keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)
+        callback_list.append(early_stopping)
+    history = model.fit(train_data, train_target, epochs=epoch, batch_size=batch, validation_data=(val_data, val_target), callbacks=callback_list)
+    
+    return model, history
