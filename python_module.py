@@ -29,26 +29,29 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from scipy import sparse
 import keras
 
-
-#%%231115
-
-def make_GRU(train_data, train_target, val_data, val_target,num_words=500, acti=None, optimizer=None, loss=None, metrics=None, checkpoint=None, earlystopping=None, epoch=100, batch_size=32):
-    model4 = keras.Sequential()
-    if keras.utils.to_categorical(train_data).shape[-1] != num_words:
-        return print('warning!! : please enter the num_words value accurately')
-    model4.add(keras.layers.Embedding(num_words, 16, input_length=train_data.shape[-1]))
-    model4.add(keras.layers.GRU(8))
-    model4.add(keras.layers.Dense(1, activation=acti))
+#%%231116
+def cat_or_dog(train_generator, validation_generator, batch_size, optimizer, loss, metrics, epoch):
+    model = keras.Sequential()
+    model.add(keras.layers.Conv2D(32, kernel_size=3, activation='relu', input_shape=(150, 150, 3)))
+    model.add(keras.layers.MaxPooling2D((2, 2)))
+    model.add(keras.layers.Conv2D(64, kernel_size=3, activation='relu'))
+    model.add(keras.layers.MaxPooling2D((2, 2)))
+    model.add(keras.layers.Conv2D(128, kernel_size=3, activation='relu'))
+    model.add(keras.layers.MaxPooling2D((2, 2)))
+    model.add(keras.layers.Conv2D(128, kernel_size=3, activation='relu'))
+    model.add(keras.layers.MaxPooling2D((2, 2)))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Dense(512, activation='relu'))
+    model.add(keras.layers.Dense(1, activation='sigmoid'))
     
-    opt = optimizer
-    model4.compile(optimizer=opt, loss=loss, metrics=metrics)
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
     
-    callback_list = []
-    if checkpoint:
-        callback_list.append(keras.callbacks.ModelCheckpoint('best_gru-model.h5', save_best_only=True))
-    if earlystopping:
-        callback_list.append(keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True))
-    history = model4.fit(train_data, train_target, epochs=epoch, batch_size=batch_size,
-                     validation_data=(val_data, val_target),
-                     callbacks=callback_list)
-    return model4, history
+    step = train_generator.n / batch_size
+    val_step = validation_generator.n / batch_size
+    history = model.fit_generator(train_generator,
+                                  steps_per_epoch=step,
+                                  epochs=epoch,
+                                  validation_data=validation_generator,
+                                  validation_steps=val_step)
+    return model, history
